@@ -1,4 +1,8 @@
+import "dotenv/config"
+import { resolve } from "path";
 import { Kafka } from "kafkajs";
+import { IMessage } from "./dtos/IMessage";
+import { makeSendMail } from "./main/factories/dbSendMail";
 
 const kafka = new Kafka({
   clientId: "certificate",
@@ -18,8 +22,29 @@ async function run () {
   await consumer.subscribe({ topic });
   await consumer.run({
     eachMessage: async ({topic, partition, message}) => {
-      const prefix = `${topic}[${partition}] | ${message.offset}] / ${message.timestamp} `;
-      console.log(`- ${prefix} ${message.key}##${message.value}`);
+      const templatePath = resolve(
+        __dirname,
+        "infra",
+        "views",
+        "emails",
+        "forgotPassword.hbs"
+      );
+      
+      const {user, course, dateConclused,  workload} = JSON.parse(String(message.value)) as IMessage;
+      const mailProvider = makeSendMail();
+        mailProvider.sendMail({
+        to: user.email,
+        subject: "Certificado de conclusão de curso",
+       template: {
+        file: templatePath ,
+        variables: {
+          name: user.name,
+          course,
+          link: "gjkdlgjkdklgjdg"
+        }
+       }
+        
+      }).catch(console.error) 
     }
   })
 }

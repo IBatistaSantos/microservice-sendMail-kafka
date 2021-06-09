@@ -4,7 +4,11 @@ const router = Router();
 
 router.get("/certifications", async (request, response) => {
   const message = {
-    user: { id: 1, name: 'Israel dos Santos Pereira Batista' },
+    user: { 
+      id: 1, 
+      name: 'Israel dos Santos Pereira Batista', 
+      email: "israelbatiista19@gmail.com" 
+    },
     course: 'Kafka com Node.js',
     dateConclused: new Date(),
     workload: 120
